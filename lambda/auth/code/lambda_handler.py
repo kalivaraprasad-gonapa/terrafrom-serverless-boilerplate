@@ -16,7 +16,7 @@ keys_url = f"https://cognito-idp.{region}.amazonaws.com/{userpool_id}/.well-know
 # instead of re-downloading the public keys every time
 # we download them only on cold start
 # https://aws.amazon.com/blogs/compute/container-reuse-in-lambda/
-with requests.get(keys_url) as f:
+with requests.get(keys_url, timeout=60) as f:
   response = f.text
 keys = json.loads(response)['keys']
 
@@ -121,7 +121,7 @@ def handle_login_request(code):
     headers = {"Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": f"Basic {secret_hash}"}
 
-    resp = requests.post(token_url, params=payload, headers=headers)
+    resp = requests.post(token_url, params=payload, headers=headers, timeout=60)
     log_debug(f"Response from cognito: {resp.status_code}: {resp.text}")
 
     if resp.status_code == 200:
