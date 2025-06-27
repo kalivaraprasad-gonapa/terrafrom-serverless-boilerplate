@@ -5,6 +5,7 @@ import base64
 import requests
 import random
 from http.cookies import SimpleCookie
+from security import safe_requests
 
 cognito_domain = os.environ["COGNITO_DOMAIN"]
 userpool_id = os.environ["COGNITO_USER_POOL_ID"]
@@ -16,7 +17,7 @@ keys_url = f"https://cognito-idp.{region}.amazonaws.com/{userpool_id}/.well-know
 # instead of re-downloading the public keys every time
 # we download them only on cold start
 # https://aws.amazon.com/blogs/compute/container-reuse-in-lambda/
-with requests.get(keys_url) as f:
+with safe_requests.get(keys_url) as f:
   response = f.text
 keys = json.loads(response)['keys']
 
